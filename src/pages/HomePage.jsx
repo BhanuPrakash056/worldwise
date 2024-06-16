@@ -1,10 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Product from "./Product";
-
 function HomePage() {
-  return (
-    <div>home</div>
-  );
+  return <div>Home Page</div>;
 }
 
 export default HomePage;
