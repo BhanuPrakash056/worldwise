@@ -4,11 +4,12 @@ import Pricing from "./pages/Pricing";
 import PageNotFound from "./pages/PageNotFound";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
+import AppLayout from "./pages/AppLayout";
 function App() {
   return (
     <>
       <BrowserRouter>
-        <appLayout />
+        <AppLayout />
         <Routes>
           <Route path="/" element={<Homepage />}></Route>
           <Route path="product" element={<Product />}></Route>
@@ -17,6 +18,7 @@ function App() {
           <Route path="*" element={<PageNotFound />}></Route>
         </Routes>
       </BrowserRouter>
+      "hello"
     </>
   );
 }
