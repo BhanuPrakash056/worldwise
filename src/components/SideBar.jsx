@@ -1,19 +1,23 @@
+import { Outlet } from "react-router-dom";
+import AppNav from "./AppNav";
 import Logo from "./Logo";
 import styles from "./Sidebar.module.css";
-import AppNav from "./AppNav";
-function SideBar() {
+
+function Sidebar() {
   return (
     <div className={styles.sidebar}>
       <Logo />
       <AppNav />
-      <p> List of Cities</p>
+        {}
+      <Outlet />
+
       <footer className={styles.footer}>
-        {" "}
-        <p className={styles.copyright}></p>&copy; {new Date().getFullYear()} by
-        Bhanu Prakash R
+        <p className={styles.copyright}>
+          &copy; Copyright {new Date().getFullYear()} by WorldWise Inc.
+        </p>
       </footer>
     </div>
   );
 }
 
-export default SideBar;
+export default Sidebar;
