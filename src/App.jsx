@@ -5,6 +5,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import AppLayout from "./pages/AppLayout";
+import City from "./components/City";
 import CityList from "./components/CityList";
 import { useEffect, useState } from "react";
 import CountriesList from "./components/CountriesList";
@@ -42,6 +43,7 @@ function App() {
               index
               element={<CityList cities={cities} isLoading={isLoading} />}
             ></Route>
+            <Route path='cities/:id' element={<City />} />
             <Route
               path="cities"
               element={<CityList cities={cities} isLoading={isLoading} />}
