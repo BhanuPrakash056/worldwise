@@ -23,7 +23,7 @@ function App() {
             <Route path="*" element={<PageNotFound />}></Route>
             <Route path="app" element={<AppLayout />}>
               <Route index element={<CityList />}></Route>
-              <Route path="cities/:id" />
+              <Route path="cities/:id" element={<City />} />
               <Route path="cities" element={<CityList />}></Route>
               <Route path="countries" element={<CountriesList />}></Route>
               <Route path="form" element={<p>form</p>}></Route>
