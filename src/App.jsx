@@ -10,6 +10,7 @@ import CityList from "./components/CityList";
 import { useEffect, useState } from "react";
 import CountriesList from "./components/CountriesList";
 import { CitiesProvider } from "./context/CitiesContext";
+import Form from "./components/Form";
 function App() {
   return (
     <>
@@ -26,7 +27,7 @@ function App() {
               <Route path="cities/:id" element={<City />} />
               <Route path="cities" element={<CityList />}></Route>
               <Route path="countries" element={<CountriesList />}></Route>
-              <Route path="form" element={<p>form</p>}></Route>
+              <Route path="form" element={<Form />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>
