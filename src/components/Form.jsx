@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Button from "./Button";
 import { useCities } from "../context/CitiesContext";
 import BackButton from "./BackButton";
+import { useNavigate } from "react-router-dom";
 export function convertToEmoji(countryCode) {
   const codePoints = countryCode
     .toUpperCase()
@@ -20,6 +21,7 @@ function Form() {
   const [lat, lng] = useUrlPosition();
   const [cityName, setCityName] = useState("");
   const { createCity, isLoading } = useCities();
+  const navigate = useNavigate();
   const [country, setCountry] = useState("");
   const [date, setDate] = useState(new Date());
   const [notes, setNotes] = useState("");
@@ -55,7 +57,7 @@ function Form() {
 
   if (geocodingError) return <Message message={geocodingError}></Message>;
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!cityName || !country || !date) return;
     const newCity = {
@@ -67,7 +69,8 @@ function Form() {
       position: { lat, lng },
     };
 
-    createCity(newCity);
+    await createCity(newCity);
+    navigate("/app/cities");
   }
   return (
     <form
