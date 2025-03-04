@@ -28,7 +28,24 @@ function CitiesProvider({ children }) {
       const res = await fetch(`${URL}/cities/${id}`);
       const data = await res.json();
       setCurrentCity(data);
-      console.log(data,"data", id , "id")
+    } catch (err) {
+      console.log("Error in fetching the data");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  async function createCity(newCity) {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${URL}/cities`, {
+        method: "POST",
+        body: JSON.stringify(newCity),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      setCities((cities) => [...cities, data]);
     } catch (err) {
       console.log("Error in fetching the data");
     } finally {
@@ -42,6 +59,7 @@ function CitiesProvider({ children }) {
         isLoading,
         currentCity,
         getCity,
+        createCity,
       }}
     >
       {children}
@@ -52,7 +70,7 @@ function CitiesProvider({ children }) {
 function useCities() {
   const context = useContext(CitiesContext);
   if (context === undefined) {
-    throw new error("useCities must be used within a CitiesProvider");
+    throw new Error("useCities must be used within a CitiesProvider");
   }
   return context;
 }
