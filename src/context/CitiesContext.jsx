@@ -1,18 +1,42 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 const URL = "http://localhost:8000";
 const CitiesContext = createContext();
+const initialState = {
+  cities: [],
+  isLoading: false,
+  currentCity: {},
+};
+function reducer(state, action) {
+  switch (action.type) {
+    case "loading":
+      return { ...state, isLoading: true };
+    case "city/loaded":
+      return { ...state, isLoading: false, cities: action.payload };
+    case "cities/loaded":
+      return { ...state, cities: action.payload, isLoading: false };
+    default: {
+      throw new Error("Unknown return time");
+    }
+  }
+}
 function CitiesProvider({ children }) {
-  const [cities, setCities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentCity, setCurrentCity] = useState({});
-
+  // const [cities, setCities] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [currentCity, setCurrentCity] = useState({});
+  const [{}, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
     async function fetchCities() {
       try {
-        setIsLoading(true);
+        dispatch({ type: "loading" });
         const res = await fetch(`${URL}/cities`);
         const data = await res.json();
-        setCities(data);
+        dispatch({ type: "cities/loaded", payload: { data } });
       } catch (err) {
         console.log("Error in fetching the data");
       } finally {
@@ -24,19 +48,17 @@ function CitiesProvider({ children }) {
 
   async function getCity(id) {
     try {
-      setIsLoading(true);
+      dispatch({ type: "loading" });
       const res = await fetch(`${URL}/cities/${id}`);
       const data = await res.json();
-      setCurrentCity(data);
+      dispatch({type: "cities/"})
     } catch (err) {
       console.log("Error in fetching the data");
-    } finally {
-      setIsLoading(false);
     }
   }
   async function createCity(newCity) {
     try {
-      setIsLoading(true);
+      dispatch({ type: "loading" });
       const res = await fetch(`${URL}/cities`, {
         method: "POST",
         body: JSON.stringify(newCity),
@@ -48,14 +70,12 @@ function CitiesProvider({ children }) {
       setCities((cities) => [...cities, data]);
     } catch (err) {
       console.log("Error in fetching the data");
-    } finally {
-      setIsLoading(false);
     }
   }
 
   async function deleteCity(id) {
     try {
-      setIsLoading(true);
+      dispatch({ type: "loading" });
       await fetch(`${URL}/cities/${id}`, {
         method: "DELETE",
       });
