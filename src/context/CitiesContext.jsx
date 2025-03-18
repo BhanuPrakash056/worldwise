@@ -29,6 +29,7 @@ function reducer(state, action) {
   }
 }
 
+// eslint-disable-next-line react/prop-types
 function CitiesProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { cities, isLoading, currentCity } = state;

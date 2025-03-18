@@ -7,10 +7,10 @@ import Login from "./pages/Login";
 import AppLayout from "./pages/AppLayout";
 import City from "./components/City";
 import CityList from "./components/CityList";
-import { useEffect, useState } from "react";
 import CountriesList from "./components/CountriesList";
 import { CitiesProvider } from "./context/CitiesContext";
 import Form from "./components/Form";
+
 function App() {
   return (
     <>
