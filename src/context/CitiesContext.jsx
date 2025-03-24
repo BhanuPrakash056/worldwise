@@ -1,29 +1,37 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 
-const URL = "http://localhost:8000";
+const URL = process.env.REACT_APP_API_URL || "http://localhost:8000"; // Use environment variable for URL
 const CitiesContext = createContext();
 
 const initialState = {
   cities: [],
   isLoading: false,
   currentCity: {},
+  error: null, // Added error state
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case "loading":
-      return { ...state, isLoading: true };
+      return { ...state, isLoading: true, error: null }; // Reset error on loading
     case "cities/loaded":
       return { ...state, cities: action.payload, isLoading: false };
     case "city/loaded":
       return { ...state, currentCity: action.payload, isLoading: false };
     case "city/created":
-      return { ...state, cities: [...state.cities, action.payload] };
+      return {
+        ...state,
+        cities: [...state.cities, action.payload],
+        isLoading: false,
+      };
     case "city/deleted":
       return {
         ...state,
         cities: state.cities.filter((city) => city.id !== action.payload),
+        isLoading: false,
       };
+    case "error":
+      return { ...state, isLoading: false, error: action.payload }; // Handle errors
     default:
       throw new Error("Unknown action type");
   }
@@ -32,36 +40,39 @@ function reducer(state, action) {
 // eslint-disable-next-line react/prop-types
 function CitiesProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { cities, isLoading, currentCity } = state;
+  const { cities, isLoading, currentCity, error } = state;
 
   useEffect(() => {
-    async function fetchCities() {
-      try {
-        dispatch({ type: "loading" });
-        const res = await fetch(`${URL}/cities`);
-        const data = await res.json();
-        dispatch({ type: "cities/loaded", payload: data });
-      } catch (err) {
-        console.log("Error in fetching the data");
-      }
-    }
     fetchCities();
   }, []);
 
-  async function getCity(id) {
+  async function fetchCities() {
+    dispatch({ type: "loading" });
     try {
-      dispatch({ type: "loading" });
+      const res = await fetch(`${URL}/cities`);
+      if (!res.ok) throw new Error("Failed to fetch cities");
+      const data = await res.json();
+      dispatch({ type: "cities/loaded", payload: data });
+    } catch (err) {
+      dispatch({ type: "error", payload: err.message });
+    }
+  }
+
+  async function getCity(id) {
+    dispatch({ type: "loading" });
+    try {
       const res = await fetch(`${URL}/cities/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch city");
       const data = await res.json();
       dispatch({ type: "city/loaded", payload: data });
     } catch (err) {
-      console.log("Error in fetching the data");
+      dispatch({ type: "error", payload: err.message });
     }
   }
 
   async function createCity(newCity) {
+    dispatch({ type: "loading" });
     try {
-      dispatch({ type: "loading" });
       const res = await fetch(`${URL}/cities`, {
         method: "POST",
         body: JSON.stringify(newCity),
@@ -69,22 +80,24 @@ function CitiesProvider({ children }) {
           "Content-Type": "application/json",
         },
       });
+      if (!res.ok) throw new Error("Failed to create city");
       const data = await res.json();
       dispatch({ type: "city/created", payload: data });
     } catch (err) {
-      console.log("Error in creating the city");
+      dispatch({ type: "error", payload: err.message });
     }
   }
 
   async function deleteCity(id) {
+    dispatch({ type: "loading" });
     try {
-      dispatch({ type: "loading" });
-      await fetch(`${URL}/cities/${id}`, {
+      const res = await fetch(`${URL}/cities/${id}`, {
         method: "DELETE",
       });
+      if (!res.ok) throw new Error("Failed to delete city");
       dispatch({ type: "city/deleted", payload: id });
     } catch (err) {
-      console.log("Error in deleting the city");
+      dispatch({ type: "error", payload: err.message });
     }
   }
 
@@ -94,6 +107,7 @@ function CitiesProvider({ children }) {
         cities,
         isLoading,
         currentCity,
+        error, // Provide error state
         getCity,
         createCity,
         deleteCity,
